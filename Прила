@@ -1,1 +1,33 @@
+import os
 
+def xor_encrypt(name, key="k"):
+    iv = os.urandom(16)
+    data = open(name, "rb").read()
+    keyb = (key.encode() * 16)[:16]
+
+    result = bytearray()
+    for i in range(len(data)):
+        result.append(data[i] ^ (key[i % 16] ^ iv[i % 16]))
+
+    open(name + "enc", "wb").write(iv + result)
+    print("Зашифрованно:", name + "enc")
+
+def xor_decrypt(name, key="k"):
+    raw = open(name, "rb").read()
+    iv, data = raw[:16], raw[16:]
+    keyb = (key.encode() * 16)[:16]
+
+    result = bytearray()
+    for i in range(len(data)):
+        result.append(data[i] ^ (keyb[i % 16] ^ iv[i % 16]))
+
+    outname = name.replace("enc", "dec")
+    open(outname, "wb").write(result)
+    print("Расшифровка:", outname)
+
+
+def rsa_encrypt(name, pubkey="pub"):
+    print("RSA")
+
+def rsa_decrypt(name, privkey="priv"):
+    print("RSA")
