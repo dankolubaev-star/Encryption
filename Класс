@@ -1,0 +1,47 @@
+ 
+import random
+import os
+
+def generate_key():
+    key = random.randint(0, 255)
+    return key
+
+def encrypt_file(src_path):
+    with open(src_path, "rb") as f:
+        data = f.read()
+
+    key = generate_key()
+
+    cipher = bytearray()
+    for b in data:
+        cipher.append((b + key) % 256)
+
+    dst_path = src_path + ".enc"
+    with open(dst_path, ".wb") as f:
+        f.write(cipher)
+def decrypt_file(enc_path, key=None):
+    with open(enc_path, "rb") as f:
+        cipher = f.read()
+
+    if key is None:
+        keyfile = enc_path + ".key.txt"
+        if os.path.exists(keyfile):
+            with open(keyfile, "r", encoding="utf-8") as f:
+                line = f.readline().strip()
+                key = int(line)
+        else:
+            key = int(input("Ключ (число 0..255): ").strip())
+
+    plain = bytearray()
+    for b in cipher:
+        plain.append((b - key) % 256)
+
+    if enc_path.endswith(".enc"):
+        dst_path = enc_path[:-4]
+    else:
+        dst_path = enc_path + ".out"
+
+    with open(dst_path, ".wb") as f:
+        f.write(plain)
+
+    print("Расшифровал в:", dst_path)
